@@ -42,9 +42,17 @@
         return (int)$this->pdo->lastInsertId();
     }
 
-    
+    public function obtenerUsuariosPorCorreo(string $correo): ?array {
+        $sql = "SELECT u.id, u.username, u.correo, u.password, r.rol
+                FROM usuarios u
+                INNER JOIN roles r ON u.id_rol = r.id
+                WHERE u.correo = :correo";
 
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':correo' => $correo]);
 
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
 
 
     }
