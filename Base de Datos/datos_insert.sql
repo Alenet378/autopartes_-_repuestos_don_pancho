@@ -28,3 +28,12 @@ INSERT INTO `usuarios` (`id`, `username`, `id_rol`, `correo`, `password`) VALUES
 (1, 'Alejandro', 1, 'alejo@gmail.com', '12345'),
 (2, 'Frixon', 2, 'frixon@gmail.com', '12345'),
 (3, 'Paco', 3, 'paco@gmail.com', '12345');
+
+
+INSERT INTO `marcas_vehiculos` (`id`, `nombre`,`logo`) VALUES
+(1, 'Ford','ford.jpg'),
+(2, 'Honda','honda.jpg'),
+(3, 'Hyundai','hyndai.jpg'),
+(4, 'Isuzu','isuzu.jpg'),
+(5, 'Nissan','nissan.jpg'),
+(6, 'Toyota','toyota.jpg');

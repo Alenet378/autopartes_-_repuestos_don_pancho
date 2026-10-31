@@ -24,12 +24,12 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="collapse navbar-collapse" id="navbarContenido">
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.php">Inicio</a>
+                <li class="nav-item ">
+                    <a class="nav-link text-warning" href="index.php">Inicio</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="catalogo.php">Catálogo</a>
+                    <a class="nav-link text-warning" href="catalogo.php">Catálogo</a>
                 </li>
             </ul>
 
@@ -41,7 +41,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <?= htmlspecialchars($_SESSION['username'], ENT_QUOTES, 'UTF-8') ?>
                     </span>
 
-                    <span class="badge text-bg-warning">
+                    <span class="badge text-bg-danger">
                         <?= $_SESSION['rol'] === 'admin' ? 'Admin' : 'Bodega' ?>
                     </span>
 
@@ -51,7 +51,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <?php else: ?>
 
-                    <a href="login.php" class="btn btn-warning btn-sm">
+                    <a href="login.php" class="btn btn-danger btn-sm">
                         Iniciar Sesión
                     </a>
 
