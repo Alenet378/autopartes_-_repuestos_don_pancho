@@ -22,9 +22,6 @@ if ($pdo !== null) {
 
 }
 
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -35,9 +32,10 @@ if ($pdo !== null) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/estilos.css">
 </head>
 
-<body class="bg-white">
+<body>
     <?php require_once __DIR__ . '/include/navbar.php'; ?>
 
     <header class="container-fluid py-5 bg-light">
@@ -83,6 +81,7 @@ if ($pdo !== null) {
             </div>
         </div>
     </header>
+
     <section id="destacados" class="container-fliud rounded-4 py-5 px-3 mt-3 bg-light">
         <div>
             <div class="text-center mb-5">

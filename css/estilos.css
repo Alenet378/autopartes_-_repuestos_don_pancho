@@ -1,0 +1,146 @@
+:root {
+    --carbon: #252525;
+    --carbon-light: #333333;
+    --red: #D62828;
+    --red-hover: #B71F1F;
+    --white: #FFFFFF;
+    --gray: #F1F1F1;
+    --gray-text: #6C757D;
+}
+
+body {
+    background-color: var(--white);
+    color: var(--carbon);
+    font-family: Arial, sans-serif;
+}
+
+
+.navbar {
+    background-color: var(--carbon) !important;
+    padding: 15px 0;
+}
+
+.navbar .navbar-brand {
+    color: var(--white) !important;
+    font-weight: bold;
+}
+
+.navbar .nav-link {
+    color: #DDDDDD !important;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: var(--red) !important;
+}
+
+
+h1, h2, h3, h4, h5 {
+    color: var(--carbon);
+    font-weight: bold;
+}
+
+section {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+
+
+.card {
+    background-color: var(--white);
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+    color: var(--carbon);
+    font-weight: bold;
+}
+
+.card-text {
+    color: var(--gray-text);
+}
+
+.card .precio {
+    color: var(--red);
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+
+.btn-primary,
+.btn-danger {
+    background-color: var(--red);
+    border-color: var(--red);
+    color: var(--white);
+}
+
+.btn-primary:hover,
+.btn-danger:hover {
+    background-color: var(--red-hover);
+    border-color: var(--red-hover);
+}
+
+.btn-outline-danger {
+    color: var(--red);
+    border-color: var(--red);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--red);
+    border-color: var(--red);
+    color: var(--white);
+}
+.badge {
+    background-color: var(--red);
+    color: var(--white);
+}
+
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid #CCCCCC;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 0.2rem rgba(214, 40, 40, 0.15);
+}
+
+footer {
+    background-color: var(--carbon);
+    color: var(--white);
+    padding: 35px 0;
+}
+
+footer h5 {
+    color: var(--white);
+}
+
+footer a {
+    color: #DDDDDD;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--red);
+}
+
+footer p {
+    color: #CCCCCC;
+}
+
+a {
+    transition: color 0.3s ease;
+}
