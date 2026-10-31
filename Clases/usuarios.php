@@ -1,6 +1,6 @@
 <?php
     declare(strict_types=1);
-    require_once __DIR__ . '/include/conexion.php';
+    require_once __DIR__ . '/../include/conexion.php';
 
     class Usuarios {
 
