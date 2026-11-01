@@ -87,6 +87,16 @@ CREATE TABLE `detalle_factura` (
   `subtotal` decimal(10,2) NOT NULL
 );
 
+CREATE TABLE filtros (
+    `id` integer  PRIMARY KEY AUTO_INCREMENT,
+    `nombre` varchar(100) NOT NULL,
+    `descripcion` TEXT,
+    `precio` decimal(10,2) NOT NULL,
+    `existencias` integer NOT NULL DEFAULT 0
+);
+
+
+
 ALTER TABLE `usuarios` ADD FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`);
 ALTER TABLE `facturas` ADD FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
 ALTER TABLE `productos` ADD FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id`);

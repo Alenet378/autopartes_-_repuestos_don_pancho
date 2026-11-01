@@ -31,6 +31,9 @@ if (session_status() === PHP_SESSION_NONE) {
                 <li class="nav-item">
                     <a class="nav-link text-warning" href="catalogo.php">Catálogo</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-warning" href="kit.php">Arma tu Kit-Up</a>
+                </li>
             </ul>
 
             <div class="d-flex align-items-center gap-3">
