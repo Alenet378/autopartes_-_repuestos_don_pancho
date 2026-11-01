@@ -3,6 +3,7 @@ declare(strict_types=1);
 session_start();
 require_once __DIR__ . '/include/conexion.php';
 require_once __DIR__ . '/Clases/productos.php';
+require_once __DIR__ . '/Clases/factura.php';
 
 $conexionBD = new ConexionBD();
 $pdo = $conexionBD->conectar();
@@ -11,6 +12,7 @@ if ($pdo === null) {
     die("No se pudo establecer la conexión con la base de datos.");
 }
 
+$factura = new Factura($pdo);
 $producto = new Productos($pdo);
 $productos = $producto->listar();
 $errores = [];
@@ -162,10 +164,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['facturar'])) {
 
     $total = $baseImponible + $isv + $costoEnvio;
 
-    
+    $datosFactura = [
+        'numero_factura' => $numeroFactura,
+        'fecha' => date('Y-m-d H:i:s'),
+        'nombre_cliente' => $nombre,
+        'rtn' => $rtn,
+        'telefono' => $telefono,
+        'direccion_envio' => $direccion,
+        'modalidad_envio' => $modalidad,
+        'sub_total' => round($subtotal, 2),
+        'descuento' => round($descuento, 2),
+        'isv' => round($isv, 2),
+        'costo_envio' => round($costoEnvio, 2),
+        'total' => round($total, 2)
+    ];
+
+    try {
+        if (empty($errores)) {
+
+            $idFactura = $factura->crear(
+                $datosFactura,
+                $productosFactura
+            );
+
+            $numeroFactura = 'FAC-DP-' . str_pad(
+                (string) $idFactura,
+                6,
+                '0',
+                STR_PAD_LEFT
+            );
+        }
+
+    } catch (PDOException $e) {
+        $errores[] = "Ocurrió un error al registrar la factura.";
+    }
+
+
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -177,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['facturar'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/estilos.css?v=2">
 </head>
 
 <body>
@@ -294,11 +329,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['facturar'])) {
 
         </form>
     </div>
-
-
-
-
-
 
     <footer class="py-5 mt-3 border-top bg-dark text-white">
         <div class="container">

@@ -44,12 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>AutoPartes y Repuestos Don Pancho | Login </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/estilos.css?v=2">
 </head>
 
 <body>
@@ -61,22 +61,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
         </p>
     <?php endif; ?>
 
-    <div id="login">
-        <h2>Inicio de Sesion</h2>
+
+    <section class="login-page">
+
+    <div class="login-card">
+
+        <h2>Inicio de Sesión</h2>
+        <p>Autopartes y Repuestos Don Pancho</p>
+
         <form action="../controladores/LoginController.php" method="POST">
+
             <input type="hidden" name="accion" value="login">
 
-            <label for="correo">Correo electrónico:</label>
-            <input type="email" name="correo" id="correo" required>
+            <div class="mb-3">
+                <label for="correo" class="form-label">
+                    Correo electrónico
+                </label>
+                <input type="email" name="correo" id="correo"
+                    class="form-control"
+                    placeholder="Ingrese su correo"
+                    required>
+            </div>
 
-            <label for="password">Contraseña:</label>
-            <input type="password" name="password" id="password" required>
-            <button type="submit">Iniciar sesión</button>
-            <button type="button">Crear Usuario</button>
+            <div class="mb-4">
+                <label for="password" class="form-label">
+                    Contraseña
+                </label>
+                <input type="password" name="password" id="password"
+                    class="form-control"
+                    placeholder="Ingrese su contraseña"
+                    required>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100">
+                Iniciar sesión
+            </button>
+
+            <button type="button" class="btn btn-register w-100 mt-2">
+                Crear usuario
+            </button>
+
         </form>
 
-
     </div>
+
+</section>
+
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 

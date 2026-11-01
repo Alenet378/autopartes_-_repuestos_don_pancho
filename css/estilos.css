@@ -52,11 +52,6 @@ h1, h2, h3, h4, h5 {
     font-weight: bold;
 }
 
-section {
-    padding-top: 30px;
-    padding-bottom: 30px;
-}
-
 
 
 .card {
@@ -154,4 +149,170 @@ footer p {
 
 a {
     transition: color 0.3s ease;
+}
+
+.login-page {
+    min-height: 100vh;
+    background: #D62828;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-card {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 430px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.login-card h2 {
+    text-align: center;
+    color: #252525;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.login-card p {
+    text-align: center;
+    color: #777777;
+    margin-bottom: 30px;
+}
+
+.login-card .form-label {
+    font-weight: 600;
+    color: #333333;
+}
+
+.login-card .form-control {
+    padding: 12px;
+    border: 1px solid #CCCCCC;
+    border-radius: 7px;
+}
+
+.login-card .form-control:focus {
+    border-color: #D62828;
+    box-shadow: 0 0 0 0.2rem rgba(214, 40, 40, 0.15);
+}
+
+.btn-login {
+    background: #D62828;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.btn-login:hover {
+    background: #B71F1F;
+    color: white;
+}
+
+.btn-register {
+    background: white;
+    color: #252525;
+    border: 1px solid #252525;
+    padding: 11px;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.btn-register:hover {
+    background: #252525;
+    color: white;
+}
+.login-page {
+    min-height: 100vh !important;
+    background-color: #D62828 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 30px !important;
+}
+
+.login-card {
+    background-color: white !important;
+    width: 100% !important;
+    max-width: 430px !important;
+    padding: 40px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+}
+/* LOGIN */
+
+body:has(.login-page) {
+    background-color: var(--red);
+}
+
+.login-page {
+    min-height: calc(100vh - 80px);
+    width: 100%;
+    background-color: var(--red);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.login-card {
+    background-color: var(--white);
+    width: 100%;
+    max-width: 430px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.login-card h2 {
+    text-align: center;
+    color: var(--carbon);
+    margin-bottom: 10px;
+}
+
+.login-card p {
+    text-align: center;
+    color: var(--gray-text);
+    margin-bottom: 30px;
+}
+
+.login-card .form-label {
+    font-weight: 600;
+    color: var(--carbon-light);
+}
+
+.login-card .form-control {
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.btn-login {
+    background-color: var(--red);
+    color: var(--white);
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn-login:hover {
+    background-color: var(--red-hover);
+    color: var(--white);
+}
+
+.btn-register {
+    background-color: var(--white);
+    color: var(--carbon);
+    border: 1px solid var(--carbon);
+    padding: 11px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn-register:hover {
+    background-color: var(--carbon);
+    color: var(--white);
 }

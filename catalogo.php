@@ -34,16 +34,16 @@ foreach ($productos as $producto) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/estilos.css?v=2">
 </head>
 
-<body >
+<body class="fondo2">
     <?php require_once __DIR__ . '/include/navbar.php'; ?>
 
 
     <?php foreach ($productosPorCategoria as $categoria => $productosCategoria): ?>
-        <section class="container-fliud rounded-4 py-5 px-3 mt-3 bg-light mb-5">
-            <h2 class="display-6 fw-bold mt-2 text-black text-center">
+        <section class="container-fliud rounded-4 py-5 px-3 mt-3 bg-dark mb-5">
+            <h2 class="display-6 fw-bold mt-2 text-white text-center">
                 <?= htmlspecialchars($categoria, ENT_QUOTES, 'UTF-8') ?>
             </h2>
 
@@ -51,7 +51,7 @@ foreach ($productos as $producto) {
                 <?php foreach ($productosCategoria as $producto): ?>
 
                     <div class="col-12 col-md-6 col-lg-4">
-                        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden ">
+                        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden  bg-white">
                             <img class="card-img-top" style="height: 220px; object-fit: contain"
                                 src="uploads/<?= htmlspecialchars($producto['foto']) ?>"
                                 alt="<?= htmlspecialchars($producto['descripcion']) ?>">
