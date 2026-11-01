@@ -6,6 +6,17 @@
     --white: #FFFFFF;
     --gray: #F1F1F1;
     --gray-text: #6C757D;
+    --fondo:#f8ebe9;
+    --fondo2:#eebeb7;
+}
+
+.fondo{
+    background-color: var(--fondo);
+    color: var(--fondo);
+}
+.fondo2{
+    background-color: var(--fondo2);
+    color: var(--fondo2);
 }
 
 body {
@@ -49,7 +60,7 @@ section {
 
 
 .card {
-    background-color: var(--white);
+    background-color: var(--carbon-light);
     border: none;
     border-radius: 12px;
     overflow: hidden;
