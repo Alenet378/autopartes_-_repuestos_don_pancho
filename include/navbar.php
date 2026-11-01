@@ -1,8 +1,8 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+$rol = $_SESSION['rol'] ?? null;
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
@@ -12,12 +12,8 @@ if (session_status() === PHP_SESSION_NONE) {
             Don Pancho
         </a>
 
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarContenido"
-                aria-controls="navbarContenido"
-                aria-expanded="false"
-                aria-label="Mostrar navegación">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido"
+            aria-controls="navbarContenido" aria-expanded="false" aria-label="Mostrar navegación">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -51,10 +47,16 @@ if (session_status() === PHP_SESSION_NONE) {
                     </span>
 
                     <span class="badge text-bg-danger">
-                        <?= $_SESSION['rol'] === 'admin' ? 'Admin' : 'Bodega' ?>
+                        <?= $_SESSION['rol'] === 1 ? 'Admin' : 'Bodega' ?>
                     </span>
 
-                    <a href="logout.php" class="btn btn-outline-light btn-sm">
+                    <?php if ($_SESSION['rol'] === 1 || $_SESSION['rol'] === 2): ?>
+                        <a href="panel.php" class="btn btn-outline-light btn-sm">
+                            Panel
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="cerrarSesion.php" class="btn btn-outline-light btn-sm">
                         Cerrar Sesión
                     </a>
 

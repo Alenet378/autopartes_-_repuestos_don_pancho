@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             $_SESSION['correo'] = $usuario['correo'];
             $_SESSION['rol'] = $usuario['rol'];
 
-            header('Location: ../index.php');
+            header('Location: index.php');
             exit;
 
         } else {
