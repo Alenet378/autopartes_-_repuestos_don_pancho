@@ -73,18 +73,29 @@ class Productos
         return (int) $this->pdo->lastInsertId();
     }
 
-    public function actualizar(int $id, float $nuevoPrecio, int $nuevoStock, string $nuevonombre): bool
-    {
-        $sql = "UPDATE productos 
-                SET precio = :precio, existencias = :stk , nombre= :nombre
-                WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            ':precio' => $nuevoPrecio,
-            ':stk' => $nuevoStock,
-            ':id' => $id,
-            ':nombre' => $nuevonombre
+    public function actualizar(
+        int $id,
+        float $nuevoPrecio,
+        int $nuevoStock,
+        string $nuevoNombre,
+        bool $destacado
+    ): bool {
 
+        $sql = "UPDATE productos
+            SET nombre = :nombre,
+                precio = :precio,
+                existencias = :existencias,
+                destacado = :destacado
+            WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            ':id' => $id,
+            ':nombre' => $nuevoNombre,
+            ':precio' => $nuevoPrecio,
+            ':existencias' => $nuevoStock,
+            ':destacado' => (int) $destacado
         ]);
     }
 

@@ -1,0 +1,28 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuración de editores
+.vscode/
+.idea/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+
+# Dependencias de Composer
+/vendor/
+
+# Archivos de entorno y credenciales
+.env
+.env.*
+!.env.example
+
+# Archivos temporales de PHP
+*.cache
+
+# No subir archivos cargados por usuarios
+/uploads/*
+!/uploads/.gitkeep

@@ -23,7 +23,7 @@ if ($pdo === null) {
 if ($pdo !== null) {
     $repo = new Productos($pdo);
     $productos = $repo->listar();
-} 
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accion = $_POST['action'] ?? '';
@@ -33,26 +33,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if ($accion === 'crear') {
-    $repo->crear(
-        (string) $_POST['nombre'],
-        (string) $_POST['descripcion'],
-        (int) $_POST['id_categoria'],
-        (float) $_POST['precio'],
-        (int) $_POST['existencias'],
-        (string) ($_POST['foto'] ?? ''),
-        isset($_POST['destacado'])
-    );
 
-    header('Location: panel.php');
-    exit;
-}
+        if (!isset($_FILES['fotografia'])) {
+            die("No se recibió ninguna fotografía.");
+        }
+
+        $archivo = $_FILES['fotografia'];
+
+        if ($archivo['error'] !== UPLOAD_ERR_OK) {
+            die("Error al recibir el archivo. Código: " . $archivo['error']);
+        }
+
+
+        $maxBytes = 4 * 1024 * 1024;
+
+        if ($archivo['size'] > $maxBytes) {
+            die("Error: La fotografía supera el límite de 4 MB.");
+        }
+
+        $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+
+        $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
+
+        if (!in_array($extension, $extensionesPermitidas, true)) {
+            die("Extensión no permitida.");
+        }
+
+
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeReal = $finfo->file($archivo['tmp_name']);
+
+        $mimesValidos = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp'
+        ];
+
+        if (
+            !isset($mimesValidos[$extension]) ||
+            $mimeReal !== $mimesValidos[$extension]
+        ) {
+            die("El archivo no corresponde a una imagen válida.");
+        }
+
+        $nuevoNombre = bin2hex(random_bytes(16)) . '.' . $extension;
+
+        $carpetaDestino = __DIR__ . '/uploads/';
+
+        if (!is_dir($carpetaDestino)) {
+            mkdir($carpetaDestino, 0755, true);
+        }
+
+        $rutaFinal = $carpetaDestino . $nuevoNombre;
+
+        if (!move_uploaded_file($archivo['tmp_name'], $rutaFinal)) {
+            die("Error al guardar la fotografía.");
+        }
+
+        $repo->crear(
+            (string) $_POST['nombre'],
+            (string) $_POST['descripcion'],
+            (int) $_POST['id_categoria'],
+            (float) $_POST['precio'],
+            (int) $_POST['existencias'],
+            $nuevoNombre,
+            isset($_POST['destacado'])
+        );
+
+        header('Location: panel.php');
+        exit;
+    }
 
     if ($accion === 'actualizar') {
         $id = (int) ($_POST['id'] ?? 0);
         $precio = (float) ($_POST['precio'] ?? 0.0);
         $stock = (int) ($_POST['existencias'] ?? 0);
         $nombre = trim((string) ($_POST['nombre'] ?? ''));
-        $repo->actualizar($id, $precio, $stock, $nombre);
+        $destacado = isset($_POST['destacado']);
+
+        $repo->actualizar(
+            $id,
+            $precio,
+            $stock,
+            $nombre,
+            $destacado
+        );
         header("Location: panel.php");
         exit;
     }
@@ -74,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/estilos.css?v=2">
 </head>
 
-<body >
+<body>
     <?php require_once __DIR__ . '/include/navbar.php'; ?>
 
 
@@ -97,191 +163,190 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </tr>
             </thead>
             <?php
-        if (empty($productos)): ?>
-            <tr>
-                <td>No hay productos en la tabla </td>
-            </tr>
-        <?php else: ?>
-            <?php foreach ($productos as $pro): ?>
+            if (empty($productos)): ?>
                 <tr>
-                    <td><?= $pro["nombre"] ?></td>
-                    <td><?= $pro["categoria"] ?></td>
-                    <td><?= $pro["precio"] ?></td>
-                    <td><?= $pro["existencias"] ?></td>
-                    <td><button type="button" class="btn-editar" data-id="<?= $pro['id'] ?>" data-nombre="<?= $pro['nombre'] ?>"
-                            data-precio="<?= $pro['precio'] ?>" data-stock="<?= $pro['existencias'] ?>">Editar
-                        </button>
-                    </td>
-                   <td>
-                        <form method="POST" action="panel.php"
-                            onsubmit="return confirm('Desea eliminar el producto');">
-                            <input type="hidden" name="action" value="eliminar">
-                            <input type="hidden" name="id" value="<?= $pro["id"] ?>">
-                            <button type="submit">Borrar una fila de la tabla</button>
-                        </form>
-                    </td>
+                    <td>No hay productos en la tabla </td>
                 </tr>
-            <?php endforeach ?>
-        <?php endif ?>
+            <?php else: ?>
+                <?php foreach ($productos as $pro): ?>
+                    <tr>
+                        <td><?= $pro["nombre"] ?></td>
+                        <td><?= $pro["categoria"] ?></td>
+                        <td><?= $pro["precio"] ?></td>
+                        <td><?= $pro["existencias"] ?></td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-sm btn-editar" data-id="<?= (int) $pro['id'] ?>"
+                                data-nombre="<?= htmlspecialchars($pro['nombre'], ENT_QUOTES, 'UTF-8') ?>"
+                                data-precio="<?= (float) $pro['precio'] ?>" data-stock="<?= (int) $pro['existencias'] ?>"
+                                data-destacado="<?= (int) $pro['destacado'] ?>">
+                                Editar
+                            </button>
+                        </td>
+                        <td>
+                            <form method="POST" action="panel.php" onsubmit="return confirm('Desea eliminar el producto');">
+                                <input type="hidden" name="action" value="eliminar">
+                                <input type="hidden" name="id" value="<?= $pro["id"] ?>">
+                                <button type="submit">Borrar una fila de la tabla</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            <?php endif ?>
         </table>
         <button type="button" id="btn-crear">Agregar nuevo producto</button>
     </div>
-    
-    
-<div class="modal fade" id="modalCrear" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form action="panel.php" method="POST">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Registrar producto</h5>
-                    <button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
 
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="crear">
 
-                    <div class="mb-3">
-                        <label for="crearNombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control"
-                            id="crearNombre" name="nombre" required>
+    <div class="modal fade" id="modalCrear" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="POST" action="panel.php" enctype="multipart/form-data">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Registrar producto</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="crearDescripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="crearDescripcion"
-                            name="descripcion" required></textarea>
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="crear">
+
+                        <div class="mb-3">
+                            <label for="crearNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="crearNombre" name="nombre" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="crearDescripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="crearDescripcion" name="descripcion" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="crearCategoria" class="form-label">ID de categoría</label>
+                            <input type="number" class="form-control" id="crearCategoria" name="id_categoria" min="1"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="crearPrecio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="crearPrecio" name="precio" min="0.01"
+                                step="0.01" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="crearExistencias" class="form-label">Existencias</label>
+                            <input type="number" class="form-control" id="crearExistencias" name="existencias" min="0"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="crearFoto" class="form-label">Fotografía del producto</label>
+                            <input type="file" class="form-control" id="crearFoto" name="fotografia"
+                                accept=".jpg,.jpeg,.png,.webp" required>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="crearDestacado" name="destacado"
+                                value="1">
+                            <label class="form-check-label" for="crearDestacado">
+                                Producto destacado
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="crearCategoria" class="form-label">ID de categoría</label>
-                        <input type="number" class="form-control"
-                            id="crearCategoria" name="id_categoria" min="1" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">
+                            Guardar producto
+                        </button>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="crearPrecio" class="form-label">Precio</label>
-                        <input type="number" class="form-control"
-                            id="crearPrecio" name="precio" min="0.01"
-                            step="0.01" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="crearExistencias" class="form-label">Existencias</label>
-                        <input type="number" class="form-control"
-                            id="crearExistencias" name="existencias"
-                            min="0" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="crearFoto" class="form-label">Nombre del archivo de foto</label>
-                        <input type="text" class="form-control"
-                            id="crearFoto" name="foto"
-                            placeholder="Ejemplo: bujia.jpg">
-                    </div>
-
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input"
-                            id="crearDestacado" name="destacado" value="1">
-                        <label class="form-check-label" for="crearDestacado">
-                            Producto destacado
-                        </label>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">
-                        Guardar producto
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form action="panel.php" method="POST">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title">Editar producto</h5>
-                    <button type="button" class="btn-close"
-                        data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="actualizar">
-                    <input type="hidden" name="id" id="editarId">
-
-                    <div class="mb-3">
-                        <label for="editarNombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control"
-                            name="nombre" id="editarNombre" required>
+    <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="panel.php" method="POST">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title">Editar producto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="editarPrecio" class="form-label">Precio</label>
-                        <input type="number" class="form-control"
-                            name="precio" id="editarPrecio"
-                            min="0.01" step="0.01" required>
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="actualizar">
+                        <input type="hidden" name="id" id="editarId">
+
+                        <div class="mb-3">
+                            <label for="editarNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="editarNombre" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editarPrecio" class="form-label">Precio</label>
+                            <input type="number" class="form-control" name="precio" id="editarPrecio" min="0.01"
+                                step="0.01" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editarStock" class="form-label">Existencias</label>
+                            <input type="number" class="form-control" name="existencias" id="editarStock" min="0"
+                                required>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="destacado" id="editarDestacado"
+                                value="1">
+
+                            <label class="form-check-label" for="editarDestacado">
+                                Producto destacado
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="editarStock" class="form-label">Existencias</label>
-                        <input type="number" class="form-control"
-                            name="existencias" id="editarStock"
-                            min="0" required>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">
+                            Guardar cambios
+                        </button>
                     </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-warning">
-                        Guardar cambios
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form action="panel.php" method="POST">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirmar eliminación</h5>
-                    <button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="panel.php" method="POST">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
+                    </div>
 
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" id="eliminarId">
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="eliminar">
+                        <input type="hidden" name="id" id="eliminarId">
 
-                    <p class="mb-0">
-                        ¿Estás seguro de que deseas eliminar el producto
-                        <strong id="eliminarNombre"></strong>?
-                    </p>
-                    <p class="text-danger small mt-2 mb-0">
-                        Esta acción no se puede deshacer.
-                    </p>
-                </div>
+                        <p class="mb-0">
+                            ¿Estás seguro de que deseas eliminar el producto
+                            <strong id="eliminarNombre"></strong>?
+                        </p>
+                        <p class="text-danger small mt-2 mb-0">
+                            Esta acción no se puede deshacer.
+                        </p>
+                    </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">
-                        Sí, eliminar
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">
+                            Sí, eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 
 
@@ -293,49 +358,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 
-const modalCrear = new bootstrap.Modal(
-    document.getElementById('modalCrear')
-);
+    const modalCrear = new bootstrap.Modal(
+        document.getElementById('modalCrear')
+    );
 
-const modalEditar = new bootstrap.Modal(
-    document.getElementById('modalEditar')
-);
+    const modalEditar = new bootstrap.Modal(
+        document.getElementById('modalEditar')
+    );
 
-const modalEliminar = new bootstrap.Modal(
-    document.getElementById('modalEliminar')
-);
+    const modalEliminar = new bootstrap.Modal(
+        document.getElementById('modalEliminar')
+    );
 
-document.getElementById('btn-crear').addEventListener('click', () => {
-    document.getElementById('crearNombre').value = '';
-    document.getElementById('crearDescripcion').value = '';
-    document.getElementById('crearCategoria').value = '';
-    document.getElementById('crearPrecio').value = '';
-    document.getElementById('crearExistencias').value = '';
-    document.getElementById('crearFoto').value = '';
-    document.getElementById('crearDestacado').checked = false;
+    document.getElementById('btn-crear').addEventListener('click', () => {
+        document.getElementById('crearNombre').value = '';
+        document.getElementById('crearDescripcion').value = '';
+        document.getElementById('crearCategoria').value = '';
+        document.getElementById('crearPrecio').value = '';
+        document.getElementById('crearExistencias').value = '';
+        document.getElementById('crearFoto').value = '';
+        document.getElementById('crearDestacado').checked = false;
 
-    modalCrear.show();
-});
-
-document.querySelectorAll('.btn-editar').forEach(boton => {
-    boton.addEventListener('click', () => {
-        document.getElementById('editarId').value = boton.dataset.id;
-        document.getElementById('editarNombre').value = boton.dataset.nombre;
-        document.getElementById('editarPrecio').value = boton.dataset.precio;
-        document.getElementById('editarStock').value = boton.dataset.stock;
-
-        modalEditar.show();
+        modalCrear.show();
     });
-});
 
-document.querySelectorAll('.btn-eliminar').forEach(boton => {
-    boton.addEventListener('click', () => {
-        document.getElementById('eliminarId').value = boton.dataset.id;
-        document.getElementById('eliminarNombre').textContent =
-            boton.dataset.nombre;
-
-        modalEliminar.show();
+    document.querySelectorAll('.btn-editar').forEach(boton => {
+        boton.addEventListener('click', () => {
+            document.getElementById('editarId').value = boton.dataset.id;
+            document.getElementById('editarNombre').value = boton.dataset.nombre;
+            document.getElementById('editarPrecio').value = boton.dataset.precio;
+            document.getElementById('editarStock').value = boton.dataset.stock;
+            document.getElementById('editarDestacado').checked = boton.dataset.destacado === '1';
+            modalEditar.show();
+        });
     });
-});
+
+    document.querySelectorAll('.btn-eliminar').forEach(boton => {
+        boton.addEventListener('click', () => {
+            document.getElementById('eliminarId').value = boton.dataset.id;
+            document.getElementById('eliminarNombre').textContent =
+                boton.dataset.nombre;
+
+            modalEliminar.show();
+        });
+    });
 
 </script>

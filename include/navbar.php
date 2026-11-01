@@ -47,7 +47,7 @@ $rol = $_SESSION['rol'] ?? null;
                     </span>
 
                     <span class="badge text-bg-danger">
-                        <?= $_SESSION['rol'] === 1 ? 'Admin' : 'Bodega' ?>
+                        <?= htmlspecialchars($_SESSION['nombre_rol'], ENT_QUOTES, 'UTF-8') ?>
                     </span>
 
                     <?php if ($_SESSION['rol'] === 1 || $_SESSION['rol'] === 2): ?>
