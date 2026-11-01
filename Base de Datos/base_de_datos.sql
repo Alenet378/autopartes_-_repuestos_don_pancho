@@ -62,7 +62,6 @@ CREATE TABLE `kit_extras` (
 
 CREATE TABLE `facturas` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `id_usuario` integer NOT NULL,
   `numero_factura` varchar(30) NOT NULL UNIQUE,
   `fecha` datetime NOT NULL,
   `nombre_cliente` varchar(255) NOT NULL,
@@ -98,7 +97,6 @@ CREATE TABLE filtros (
 
 
 ALTER TABLE `usuarios` ADD FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`);
-ALTER TABLE `facturas` ADD FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`);
 ALTER TABLE `productos` ADD FOREIGN KEY (`id_categoria`) REFERENCES `categorias` (`id`);
 ALTER TABLE `detalle_factura` ADD FOREIGN KEY (`id_factura`) REFERENCES `facturas` (`id`);
 ALTER TABLE `detalle_factura` ADD FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id`);
